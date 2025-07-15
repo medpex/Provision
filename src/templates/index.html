@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Commission Dashboard</title>
+</head>
+<body>
+    <h1>Commission Dashboard</h1>
+
+    <h2>Login</h2>
+    <form id="login-form">
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button type="submit">Login</button>
+    </form>
+
+    <div id="sales-data"></div>
+
+    <script>
+        const loginForm = document.getElementById('login-form');
+        const salesData = document.getElementById('sales-data');
+        let token = null;
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            const res = await fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Basic ' + btoa(username + ':' + password)
+                }
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                token = data.token;
+                getSales();
+            } else {
+                alert('Login failed');
+            }
+        });
+
+        async function getSales() {
+            const res = await fetch('/sales', {
+                headers: {
+                    'x-access-token': token
+                }
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                let output = '<h2>Sales Data</h2>';
+                data.sales.forEach(sale => {
+                    output += `
+                        <div>
+                            <p>Sale ID: ${sale.id}</p>
+                            <p>Product ID: ${sale.product_id}</p>
+                            <p>Quantity: ${sale.quantity}</p>
+                            <p>Sale Date: ${sale.sale_date}</p>
+                        </div>
+                    `;
+                });
+                salesData.innerHTML = output;
+            } else {
+                alert('Failed to fetch sales data');
+            }
+        }
+    </script>
+</body>
+</html>

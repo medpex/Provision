@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - DATABASE_URL=postgresql://user:password@db:5432/commission_db
+    depends_on:
+      - db
+  db:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=commission_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+  tests:
+    build: .
+    command: python tests/test_basic.py
+    environment:
+      - DATABASE_URL=postgresql://user:password@db:5432/commission_db
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:

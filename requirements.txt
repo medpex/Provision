@@ -9,3 +9,4 @@ pandas==1.4.2
 openpyxl==3.0.10
 fpdf==1.7.2
 Flask-Mail==0.9.1
+Werkzeug==2.0.3

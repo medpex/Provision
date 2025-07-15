@@ -7,17 +7,6 @@ import os
 
 load_dotenv()
 
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'thisissecret'
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['MAIL_SERVER'] = 'smtp.mailtrap.io'
-app.config['MAIL_PORT'] = 2525
-app.config['MAIL_USERNAME'] = 'user'
-app.config['MAIL_PASSWORD'] = 'password'
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USE_SSL'] = False
-
 db = SQLAlchemy()
 migrate = Migrate()
 mail = Mail()
@@ -47,13 +36,12 @@ def create_app():
     app.register_blueprint(reporting.bp)
     app.register_blueprint(simulation.bp)
 
+    @app.route('/')
+    def index():
+        return render_template('index.html')
+
     return app
 
-app = create_app()
-
-@app.route('/')
-def index():
-    return render_template('index.html')
-
 if __name__ == '__main__':
+    app = create_app()
     app.run()
